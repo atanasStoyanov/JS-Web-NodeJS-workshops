@@ -1,10 +1,12 @@
 const {Router} = require('express');
+const {getCubes} = require('../controllers/cube');
 
 const router = Router();
 
 router.get('/', (req, res) => {
     res.render('index', {
-        title: 'Cube Workshop'
+        title: 'Cube Workshop',
+        cubes: getCubes()
     });
 });
 
