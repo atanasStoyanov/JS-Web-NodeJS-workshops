@@ -1,12 +1,12 @@
 const {Router} = require('express');
-const {getCubes} = require('../controllers/cube');
+const {getAllCubes, getCubeById} = require('../controllers/cube');
 
 const router = Router();
 
 router.get('/', (req, res) => {
     res.render('index', {
         title: 'Cube Workshop',
-        cubes: getCubes()
+        cubes: getAllCubes()
     });
 });
 
@@ -23,8 +23,10 @@ router.get('/create', (req, res) => {
 })
 
 router.get('/details/:id', (req, res) => {
+    const cube = getCubeById(req.params.id)
     res.render('details', {
-        title: 'Details | Cube Workshop'
+        title: 'Details | Cube Workshop',
+        ...cube
     });
 })
 

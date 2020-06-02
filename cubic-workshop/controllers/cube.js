@@ -1,15 +1,16 @@
-const fs = require('fs');
-const path = require('path');
+const {getCubes, getCube} = require('../controllers/database');
 
-const getCubes = () => {
+const getAllCubes = () => {
+    const allCubes = getCubes();
+    return allCubes;
+}
 
-    const databseFile = path.join(__dirname, '..', '/config/database.json');
-
-    const cubes = fs.readFileSync(databseFile);
-
-    return JSON.parse(cubes);
+const getCubeById = (id) => {
+    const cube = getCube(id); 
+    return cube;
 }
 
 module.exports = {
-    getCubes
+    getAllCubes,
+    getCubeById
 }
