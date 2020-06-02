@@ -12,7 +12,7 @@ class Cube {
         this.difficulty = difficulty || 0;
     }
 
-    save() {
+    save(callback) {
         const newCube = {
             id: this.id,
             name: this.name,
@@ -22,7 +22,7 @@ class Cube {
 
         }
         
-        saveCube(newCube);
+        saveCube(newCube, callback);
     }
 
 }
