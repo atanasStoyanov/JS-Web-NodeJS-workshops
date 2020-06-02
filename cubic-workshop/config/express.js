@@ -3,6 +3,8 @@ const handlebars = require('express-handlebars');
 const bodyParser = require('body-parser');
 
 module.exports = (app) => {
+    app.use(express.json());       // to support JSON-encoded bodies
+    app.use(express.urlencoded({extended: true})); // to support URL-encoded bodies
 
     //Setup the view engine
     app.engine('.hbs', handlebars({
