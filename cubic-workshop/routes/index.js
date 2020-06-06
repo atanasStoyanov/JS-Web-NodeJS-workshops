@@ -1,6 +1,8 @@
 const { Router } = require('express');
 const { getAllCubes, getCube } = require('../controllers/cube');
 const Cube = require('../models/cube');
+const Accessory = require('../models/accessory');
+
 
 const router = Router();
 
@@ -34,7 +36,7 @@ router.post('/create', (req, res) => {
         difficultyLevel
     } = req.body;
 
-    const cube = new Cube({name, description, imageUrl, difficulty: difficultyLevel});
+    const cube = new Cube({ name, description, imageUrl, difficulty: difficultyLevel });
 
     cube.save((err) => {
         if (err) {
@@ -51,6 +53,39 @@ router.get('/details/:id', async (req, res) => {
 
     res.render('details', {
         title: 'Details | Cube Workshop',
+        ...cube
+    });
+});
+
+router.get('/create/accessory', (req, res) => {
+    res.render('createAccessory', {
+        title: "Create Accessory"
+    });
+});
+
+router.post('/create/accessory', async (req, res) => {
+    const {
+        name,
+        imageUrl,
+        description
+    } = req.body;
+
+    const accessory = new Accessory({ name, imageUrl, description });
+
+    await accessory.save((err) => {
+        if (err) {
+            console.error(err);
+        } else {
+            res.redirect('/create/accessory')
+        }
+    });
+});
+
+router.get('/attach/accessory/:id', async (req, res) => {
+    const cube = await getCube(req.params.id);
+
+    res.render('attachAccessory', {
+        title: 'Attach Accessory',
         ...cube
     });
 });
