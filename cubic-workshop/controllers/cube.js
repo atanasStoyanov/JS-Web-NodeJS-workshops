@@ -1,16 +1,18 @@
-const {getCubes, getCube} = require('../controllers/database');
+const Cube = require('../models/cube');
 
-const getAllCubes = () => {
-    const allCubes = getCubes();
-    return allCubes;
+const getAllCubes = async () => {
+    const cubes = await Cube.find().lean();
+
+    return cubes;
 }
 
-const getCubeById = (id) => {
-    const cube = getCube(id); 
+const getCube = async (id) => {
+    const cube = await Cube.findById(id).lean();
+
     return cube;
 }
 
 module.exports = {
     getAllCubes,
-    getCubeById
+    getCube
 }
