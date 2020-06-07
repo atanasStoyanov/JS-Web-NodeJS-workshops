@@ -12,7 +12,18 @@ const getCube = async (id) => {
     return cube;
 }
 
+const updateCube = async (cubeId, accessoryId) => {
+    
+    await Cube.findByIdAndUpdate(cubeId, {
+        $addToSet: {
+            accessories: [accessoryId]
+        }
+    });
+}
+
+
 module.exports = {
     getAllCubes,
-    getCube
+    getCube,
+    updateCube
 }
