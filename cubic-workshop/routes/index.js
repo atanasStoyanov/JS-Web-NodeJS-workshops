@@ -1,5 +1,7 @@
 const { Router } = require('express');
-const { getAllCubes, getCube } = require('../controllers/cube');
+const { getAllCubes, getCube, updateCube } = require('../controllers/cube');
+const { getAccessories } = require('../controllers/accessory');
+
 const Cube = require('../models/cube');
 const Accessory = require('../models/accessory');
 
@@ -41,8 +43,9 @@ router.post('/create', (req, res) => {
     cube.save((err) => {
         if (err) {
             console.error(err);
+            res.redirect('/create');
         } else {
-            res.redirect('/')
+            res.redirect('/');
         }
     });
 
@@ -83,11 +86,26 @@ router.post('/create/accessory', async (req, res) => {
 
 router.get('/attach/accessory/:id', async (req, res) => {
     const cube = await getCube(req.params.id);
+    const accessories = await getAccessories();
+
+    const canAttachAccessory = cube.accessories.length !== accessories.length && accessories.length > 0;
 
     res.render('attachAccessory', {
         title: 'Attach Accessory',
-        ...cube
+        ...cube,
+        accessories,
+        canAttachAccessory
     });
+});
+
+router.post('/attach/accessory/:id', async (req, res) => {
+    const {
+        accessory
+    } = req.body;
+
+    await updateCube(req.params.id, accessory);
+
+    res.redirect(`/details/${req.params.id}`);
 });
 
 router.get('*', (req, res) => {
