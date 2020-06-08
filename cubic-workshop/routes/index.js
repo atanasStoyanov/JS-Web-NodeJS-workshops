@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const { getAllCubes, getCube, updateCube } = require('../controllers/cube');
+const { getAllCubes, getCube, updateCube, getCubeWithAccessories } = require('../controllers/cube');
 const { getAccessories } = require('../controllers/accessory');
 
 const Cube = require('../models/cube');
@@ -52,7 +52,7 @@ router.post('/create', (req, res) => {
 });
 
 router.get('/details/:id', async (req, res) => {
-    const cube = await getCube(req.params.id);
+    const cube = await getCubeWithAccessories(req.params.id);
 
     res.render('details', {
         title: 'Details | Cube Workshop',
@@ -88,12 +88,20 @@ router.get('/attach/accessory/:id', async (req, res) => {
     const cube = await getCube(req.params.id);
     const accessories = await getAccessories();
 
+    const cubeAccessories = cube.accessories.map(acc => acc._id.valueOf().toString());
+
+    const notAttchedAccessories = accessories.filter(acc => {
+        const accessoryString = acc._id.valueOf().toString();
+        
+        return !cubeAccessories.includes(accessoryString);
+    });
+
     const canAttachAccessory = cube.accessories.length !== accessories.length && accessories.length > 0;
 
     res.render('attachAccessory', {
         title: 'Attach Accessory',
         ...cube,
-        accessories,
+        accessories: notAttchedAccessories,
         canAttachAccessory
     });
 });
