@@ -1,13 +1,32 @@
 const express = require('express');
 
+const User = require('../models/user');
+
 const router = express.Router();
 
 router.get('/login', (req,res) => {
     res.render('loginPage');
 });
 
-router.get('/register', (req, res) => {
+router.get('/signup', (req, res) => {
     res.render('registerPage');
+});
+
+router.post('/signup', async (req, res) => {
+    const {
+        username, 
+        password
+    } = req.body;
+
+
+    const user = new User({
+        username, 
+        password
+    });
+
+    await user.save();
+
+    res.redirect('/');
 });
 
 module.exports = router;
