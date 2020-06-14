@@ -4,6 +4,12 @@ const mongoose = require('mongoose');
 const config = require('./config/config')[env];
 const expres = require('express');
 const indexRouter = require('./routes');
+const authRouter = require('./routes/auth');
+const cubeRouter = require('./routes/cube');
+const accessoryRouter = require('./routes/accessory');
+
+
+
 const app = require('express')();
 
 mongoose.connect(config.databaseUrl, {
@@ -22,5 +28,9 @@ mongoose.connect(config.databaseUrl, {
 
 require('./config/express')(app);
 
+app.use('/', authRouter);
+app.use('/', cubeRouter);
+app.use('/', accessoryRouter);
 app.use('/', indexRouter);
+
 app.listen(config.port, console.log(`Listening on port ${config.port}! Now its up to you...`));
