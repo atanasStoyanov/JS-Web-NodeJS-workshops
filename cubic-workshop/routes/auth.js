@@ -1,10 +1,12 @@
 const express = require('express');
+const bcrypt = require('bcrypt');
+const {saveUser} = require('../controllers/user');
 
 const User = require('../models/user');
 
 const router = express.Router();
 
-router.get('/login', (req,res) => {
+router.get('/login', (req, res) => {
     res.render('loginPage');
 });
 
@@ -13,18 +15,11 @@ router.get('/signup', (req, res) => {
 });
 
 router.post('/signup', async (req, res) => {
-    const {
-        username, 
-        password
-    } = req.body;
+    const status = await saveUser(req, res);
 
-
-    const user = new User({
-        username, 
-        password
-    });
-
-    await user.save();
+    if(status) {
+        return res.redirect('/');
+    }
 
     res.redirect('/');
 });
