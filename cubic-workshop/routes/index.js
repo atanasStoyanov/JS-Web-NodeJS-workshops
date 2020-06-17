@@ -1,5 +1,6 @@
 const { Router } = require('express');
 const { getAllCubes } = require('../controllers/cube');
+const { getUserStatus } = require('../controllers/user');
 
 const Cube = require('../models/cube');
 const Accessory = require('../models/accessory');
@@ -7,18 +8,20 @@ const Accessory = require('../models/accessory');
 
 const router = Router();
 
-router.get('/', async (req, res) => {
+router.get('/', getUserStatus, async (req, res) => {
     const cubes = await getAllCubes();
 
     res.render('index', {
         title: 'Cube Workshop',
-        cubes
+        cubes,
+        isLoggedIn: req.isLoggedIn
     });
 });
 
-router.get('/about', (req, res) => {
+router.get('/about', getUserStatus, (req, res) => {
     res.render('about', {
-        title: 'About | Cube Workshop'
+        title: 'About | Cube Workshop',
+        isLoggedIn: req.isLoggedIn
     });
 });
 
