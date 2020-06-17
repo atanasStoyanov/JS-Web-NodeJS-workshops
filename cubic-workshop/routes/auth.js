@@ -25,7 +25,7 @@ router.post('/signup', async (req, res) => {
 
 router.post('/login', async (req, res) => {
     const status = await verifyUser(req, res);
-    console.log(req.cookies)
+    
     if (status) {
         return res.redirect('/');
     }
