@@ -57,11 +57,55 @@ const verifyUser = async (req, res) => {
         res.cookie('aid', token);
     }
 
-
     return status;
 }
 
+const checkAuthentication = (req, res, next) => {
+    const token = req.cookies['aid'];
+
+    if (!token) {
+        return res.redirect('/');
+    }
+
+    try {
+        const decodedObject = jwt.verify(token, config.privetKey);
+        next()
+    } catch (err){
+        res.redirect('/');
+    }
+
+}
+
+const guestAccess = (req, res, next) => {
+    const token = req.cookies['aid'];
+
+    if (token) {
+        return res.redirect('/');
+    }
+    next()
+
+}
+
+const getUserStatus = (req, res, next) => {
+    const token = req.cookies['aid'];
+
+    if (!token) {
+        req.isLoggedIn = false;
+    }
+
+    try {
+        const decodedObject = jwt.verify(token, config.privetKey);
+        req.isLoggedIn = true;
+    } catch (err){
+        req.isLoggedIn = false;
+    }
+    next();
+
+}
 module.exports = {
     saveUser,
-    verifyUser
+    checkAuthentication,
+    verifyUser,
+    guestAccess,
+    getUserStatus
 }
