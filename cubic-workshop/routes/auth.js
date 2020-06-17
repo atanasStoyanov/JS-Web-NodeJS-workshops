@@ -1,6 +1,5 @@
 const express = require('express');
-const bcrypt = require('bcrypt');
-const {saveUser} = require('../controllers/user');
+const {saveUser, verifyUser} = require('../controllers/user');
 
 const User = require('../models/user');
 
@@ -23,5 +22,16 @@ router.post('/signup', async (req, res) => {
 
     res.redirect('/');
 });
+
+router.post('/login', async (req, res) => {
+    const status = await verifyUser(req, res);
+
+    if(status) {
+        return res.redirect('/');
+    }
+
+    res.redirect('/');
+});
+
 
 module.exports = router;
