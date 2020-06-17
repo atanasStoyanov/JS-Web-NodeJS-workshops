@@ -1,11 +1,12 @@
+const env = process.env.NODE_ENV || 'development';
+const config = require('../config/config')[env];
+
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-const privetKey = 'CUBE-WORKSHOP-SOFTUNI';
-
 const generateToke = data => {
-    const token = jwt.sign(data, privetKey);
+    const token = jwt.sign(data, config.privetKey);
     return token;
 }
 
@@ -52,8 +53,8 @@ const verifyUser = async (req, res) => {
             userID: user._id,
             username: user.username
         });
-        res.cookie('aid', token);
 
+        res.cookie('aid', token);
     }
 
 
