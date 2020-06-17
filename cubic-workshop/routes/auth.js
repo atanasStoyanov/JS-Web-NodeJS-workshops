@@ -1,5 +1,5 @@
 const express = require('express');
-const {saveUser, verifyUser} = require('../controllers/user');
+const { saveUser, verifyUser } = require('../controllers/user');
 
 const User = require('../models/user');
 
@@ -16,7 +16,7 @@ router.get('/signup', (req, res) => {
 router.post('/signup', async (req, res) => {
     const status = await saveUser(req, res);
 
-    if(status) {
+    if (status) {
         return res.redirect('/');
     }
 
@@ -25,8 +25,8 @@ router.post('/signup', async (req, res) => {
 
 router.post('/login', async (req, res) => {
     const status = await verifyUser(req, res);
-
-    if(status) {
+    console.log(req.cookies)
+    if (status) {
         return res.redirect('/');
     }
 
