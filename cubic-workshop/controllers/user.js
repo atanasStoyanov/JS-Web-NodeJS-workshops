@@ -16,7 +16,6 @@ const saveUser = async (req, res) => {
         password
     } = req.body;
 
-    //hashing
     const salt = await bcrypt.genSalt(10)
     const hashedPassword = await bcrypt.hash(password, salt);
 
@@ -60,7 +59,7 @@ const verifyUser = async (req, res) => {
     return status;
 }
 
-const checkAuthentication = (req, res, next) => {
+const authAccess = (req, res, next) => {
     const token = req.cookies['aid'];
 
     if (!token) {
@@ -72,6 +71,26 @@ const checkAuthentication = (req, res, next) => {
         next()
     } catch (err){
         res.redirect('/');
+    }
+
+}
+
+const authAccessJSON = (req, res, next) => {
+    const token = req.cookies['aid'];
+
+    if (!token) {
+        return res.json({
+            error: "Not authenticated"
+        });
+    }
+
+    try {
+        const decodedObject = jwt.verify(token, config.privetKey);
+        next()
+    } catch (err){
+        return res.json({
+            error: "Not authenticated"
+        });
     }
 
 }
@@ -104,7 +123,8 @@ const getUserStatus = (req, res, next) => {
 }
 module.exports = {
     saveUser,
-    checkAuthentication,
+    authAccess,
+    authAccessJSON,
     verifyUser,
     guestAccess,
     getUserStatus
