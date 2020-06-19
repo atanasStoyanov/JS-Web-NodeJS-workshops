@@ -1,16 +1,20 @@
 const express = require('express');
-const { saveUser, verifyUser } = require('../controllers/user');
+const { saveUser, verifyUser, guestAccess, getUserStatus } = require('../controllers/user');
 
 const User = require('../models/user');
 
 const router = express.Router();
 
-router.get('/login', (req, res) => {
-    res.render('loginPage');
+router.get('/login', guestAccess, getUserStatus, (req, res) => {
+    res.render('loginPage', {
+        isLoggedIn: req.isLoggedIn
+    });
 });
 
-router.get('/signup', (req, res) => {
-    res.render('registerPage');
+router.get('/signup', guestAccess, getUserStatus, (req, res) => {
+    res.render('registerPage', {
+        isLoggedIn: req.isLoggedIn
+    });
 });
 
 router.post('/signup', async (req, res) => {
@@ -25,7 +29,7 @@ router.post('/signup', async (req, res) => {
 
 router.post('/login', async (req, res) => {
     const status = await verifyUser(req, res);
-    
+
     if (status) {
         return res.redirect('/');
     }
