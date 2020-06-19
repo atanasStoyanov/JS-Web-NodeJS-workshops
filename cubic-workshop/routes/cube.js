@@ -3,7 +3,7 @@ const config = require('../config/config')[env];
 
 const express = require('express');
 const { getCubeWithAccessories } = require('../controllers/cube');
-const { checkAuthentication, getUserStatus } = require('../controllers/user');
+const { authAccess, getUserStatus } = require('../controllers/user');
 const jwt = require('jsonwebtoken');
 
 
@@ -11,14 +11,14 @@ const Cube = require('../models/cube');
 
 const router = express.Router();
 
-router.get('/create', checkAuthentication, getUserStatus, (req, res) => {
+router.get('/create', authAccess, getUserStatus, (req, res) => {
     res.render('create', {
         title: 'Create Cube | Cube Workshop',
         isLoggedIn: req.isLoggedIn
     });
 });
 
-router.post('/create', (req, res) => {
+router.post('/create', authAccess, (req, res) => {
 
     const {
         name,
@@ -53,13 +53,13 @@ router.get('/details/:id', getUserStatus, async (req, res) => {
     });
 });
 
-router.get('/edit', checkAuthentication, getUserStatus, (req, res) => {
+router.get('/edit', authAccess, getUserStatus, (req, res) => {
     res.render('editCubePage', {
         isLoggedIn: req.isLoggedIn
     });
 });
 
-router.get('/delete', checkAuthentication, getUserStatus, (req, res) => {
+router.get('/delete', authAccess, getUserStatus, (req, res) => {
     res.render('deleteCubePage', {
         isLoggedIn: req.isLoggedIn
     });
