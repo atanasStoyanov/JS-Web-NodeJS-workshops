@@ -12,7 +12,7 @@ router.get('/login', guestAccess, getUserStatus, (req, res) => {
 });
 
 router.get('/signup', guestAccess, getUserStatus, (req, res) => {
-    res.render('registerPage',{
+    res.render('registerPage', {
         isLoggedIn: req.isLoggedIn
     });
 });
