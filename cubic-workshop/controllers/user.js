@@ -17,28 +17,39 @@ const saveUser = async (req, res) => {
         repeatPassword
     } = req.body;
 
-    if (password !== repeatPassword) {
-        return false;
+    try {
+        if (password.length < 8 || !password.match(/^[A-Za-z0-9 ]+$/)) {
+            throw new Error('Invalid password');
+        } else if (password !== repeatPassword) {
+            throw new Error('Passwords do not match');
+        }
+
+        const salt = await bcrypt.genSalt(10)
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        const user = new User({
+            username,
+            password: hashedPassword
+        });
+
+        const userObject = await user.save();
+
+        const token = generateToke({
+            userID: userObject._id,
+            username: userObject.username
+        });
+
+        res.cookie('aid', token);
+
+        return token;
+    } catch (err) {
+        return {
+            error: true,
+            message: err
+        }
     }
 
-    const salt = await bcrypt.genSalt(10)
-    const hashedPassword = await bcrypt.hash(password, salt);
 
-    const user = new User({
-        username,
-        password: hashedPassword
-    });
-
-    const userObject = await user.save();
-
-    const token = generateToke({
-        userID: userObject._id,
-        username: userObject.username
-    });
-
-    res.cookie('aid', token);
-
-    return true;
 
 }
 
