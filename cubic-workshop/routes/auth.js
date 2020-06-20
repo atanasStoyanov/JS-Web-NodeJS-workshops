@@ -12,19 +12,22 @@ router.get('/login', guestAccess, getUserStatus, (req, res) => {
 });
 
 router.get('/signup', guestAccess, getUserStatus, (req, res) => {
+    const error = req.query.error ? 'Username or password is not valid' : null;
+
     res.render('registerPage', {
-        isLoggedIn: req.isLoggedIn
+        isLoggedIn: req.isLoggedIn,
+        error
     });
 });
 
 router.post('/signup', async (req, res) => {
-    const status = await saveUser(req, res);
+    const {error} = await saveUser(req, res);
 
-    if (status) {
-        return res.redirect('/');
+    if (error) {
+        return res.redirect('/signup?error=true');
     }
 
-    res.redirect('/');
+    return res.redirect('/');
 });
 
 router.post('/login', async (req, res) => {
@@ -33,7 +36,7 @@ router.post('/login', async (req, res) => {
     if (status) {
         return res.redirect('/');
     }
-
+ 
     res.redirect('/');
 });
 

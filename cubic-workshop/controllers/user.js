@@ -13,27 +13,43 @@ const generateToke = data => {
 const saveUser = async (req, res) => {
     const {
         username,
-        password
+        password,
+        repeatPassword
     } = req.body;
 
-    const salt = await bcrypt.genSalt(10)
-    const hashedPassword = await bcrypt.hash(password, salt);
+    try {
+        if (password.length < 8 || !password.match(/^[A-Za-z0-9 ]+$/)) {
+            throw new Error('Invalid password');
+        } else if (password !== repeatPassword) {
+            throw new Error('Passwords do not match');
+        }
 
-    const user = new User({
-        username,
-        password: hashedPassword
-    });
+        const salt = await bcrypt.genSalt(10)
+        const hashedPassword = await bcrypt.hash(password, salt);
 
-    const userObject = await user.save();
+        const user = new User({
+            username,
+            password: hashedPassword
+        });
 
-    const token = generateToke({
-        userID: userObject._id,
-        username: userObject.username
-    });
+        const userObject = await user.save();
 
-    res.cookie('aid', token);
+        const token = generateToke({
+            userID: userObject._id,
+            username: userObject.username
+        });
 
-    return true;
+        res.cookie('aid', token);
+
+        return token;
+    } catch (err) {
+        return {
+            error: true,
+            message: err
+        }
+    }
+
+
 
 }
 
@@ -63,13 +79,13 @@ const authAccess = (req, res, next) => {
     const token = req.cookies['aid'];
 
     if (!token) {
-        return res.redirect('/');
+        return res.redirect('/login');
     }
 
     try {
         const decodedObject = jwt.verify(token, config.privetKey);
         next()
-    } catch (err){
+    } catch (err) {
         res.redirect('/');
     }
 
@@ -87,7 +103,7 @@ const authAccessJSON = (req, res, next) => {
     try {
         const decodedObject = jwt.verify(token, config.privetKey);
         next()
-    } catch (err){
+    } catch (err) {
         return res.json({
             error: "Not authenticated"
         });
@@ -115,7 +131,7 @@ const getUserStatus = (req, res, next) => {
     try {
         const decodedObject = jwt.verify(token, config.privetKey);
         req.isLoggedIn = true;
-    } catch (err){
+    } catch (err) {
         req.isLoggedIn = false;
     }
     next();
