@@ -13,8 +13,13 @@ const generateToke = data => {
 const saveUser = async (req, res) => {
     const {
         username,
-        password
+        password,
+        repeatPassword
     } = req.body;
+
+    if (password !== repeatPassword) {
+        return false;
+    }
 
     const salt = await bcrypt.genSalt(10)
     const hashedPassword = await bcrypt.hash(password, salt);
@@ -63,13 +68,13 @@ const authAccess = (req, res, next) => {
     const token = req.cookies['aid'];
 
     if (!token) {
-        return res.redirect('/');
+        return res.redirect('/login');
     }
 
     try {
         const decodedObject = jwt.verify(token, config.privetKey);
         next()
-    } catch (err){
+    } catch (err) {
         res.redirect('/');
     }
 
@@ -87,7 +92,7 @@ const authAccessJSON = (req, res, next) => {
     try {
         const decodedObject = jwt.verify(token, config.privetKey);
         next()
-    } catch (err){
+    } catch (err) {
         return res.json({
             error: "Not authenticated"
         });
@@ -115,7 +120,7 @@ const getUserStatus = (req, res, next) => {
     try {
         const decodedObject = jwt.verify(token, config.privetKey);
         req.isLoggedIn = true;
-    } catch (err){
+    } catch (err) {
         req.isLoggedIn = false;
     }
     next();

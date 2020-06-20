@@ -24,7 +24,7 @@ router.post('/signup', async (req, res) => {
         return res.redirect('/');
     }
 
-    res.redirect('/');
+    res.redirect('/signup');
 });
 
 router.post('/login', async (req, res) => {
@@ -33,7 +33,7 @@ router.post('/login', async (req, res) => {
     if (status) {
         return res.redirect('/');
     }
-
+ 
     res.redirect('/');
 });
 
