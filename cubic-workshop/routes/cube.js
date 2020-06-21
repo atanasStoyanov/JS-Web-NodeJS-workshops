@@ -18,7 +18,7 @@ router.get('/create', authAccess, getUserStatus, (req, res) => {
     });
 });
 
-router.post('/create', authAccess, (req, res) => {
+router.post('/create', authAccess, async (req, res) => {
 
     const {
         name,
@@ -30,16 +30,25 @@ router.post('/create', authAccess, (req, res) => {
     const token = req.cookies['aid']
     const decodedObject = jwt.verify(token, config.privetKey);
 
-    const cube = new Cube({ name, description, imageUrl, difficulty: difficultyLevel, creatorId: decodedObject.userID });
-
-    cube.save((err) => {
-        if (err) {
-            console.error(err);
-            res.redirect('/create');
-        } else {
-            res.redirect('/');
-        }
+    const cube = new Cube({
+        name: name.trim(),
+        description: description.trim(),
+        imageUrl,
+        difficulty: difficultyLevel,
+        creatorId: decodedObject.userID
     });
+
+    try {
+        await cube.save();
+        return res.redirect('/');
+
+    } catch (err) {
+        return res.render('create', {
+            title: 'Create Cube | Cube Workshop',
+            isLoggedIn: req.isLoggedIn,
+            error: 'Cube details are not valid'
+        });
+    }
 
 });
 
