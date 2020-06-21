@@ -1,7 +1,7 @@
 const { Router } = require('express');
 const { getAccessories } = require('../controllers/accessory');
 const { getCube, updateCube } = require('../controllers/cube');
-const {authAccess, getUserStatus} = require('../controllers/user');
+const { authAccess, getUserStatus } = require('../controllers/user');
 
 const Accessory = require('../models/accessory');
 
@@ -23,13 +23,21 @@ router.post('/create/accessory', authAccess, getUserStatus, async (req, res) => 
 
     const accessory = new Accessory({ name, imageUrl, description });
 
-    await accessory.save((err) => {
-        if (err) {
-            console.error(err);
-        } else {
-            res.redirect('/create/accessory')
-        }
-    });
+    try {
+        await accessory.save();
+        res.render('createAccessory', {
+            title: "Create Accessory",
+            isLoggedIn: req.isLoggedIn
+        });
+
+    } catch (err) {
+        res.render('createAccessory', {
+            title: "Create Accessory",
+            isLoggedIn: req.isLoggedIn,
+            error: 'Accessory details are not valid'
+        });
+    }
+
 });
 
 router.get('/attach/accessory/:id', authAccess, getUserStatus, async (req, res) => {
