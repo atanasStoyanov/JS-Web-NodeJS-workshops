@@ -49,8 +49,6 @@ const saveUser = async (req, res) => {
         }
     }
 
-
-
 }
 
 const verifyUser = async (req, res) => {
@@ -59,20 +57,40 @@ const verifyUser = async (req, res) => {
         password
     } = req.body;
 
-    const user = await User.findOne({ username });
+    try {
+        const user = await User.findOne({ username });
 
-    const status = bcrypt.compare(password, user.password);
+        if (!user) {
+            return {
+                error: true,
+                message: 'There is no such user'
+            }
+        }
 
-    if (status) {
-        const token = generateToke({
-            userID: user._id,
-            username: user.username
-        });
+        const status = await bcrypt.compare(password, user.password);
 
-        res.cookie('aid', token);
+        if (status) {
+            const token = generateToke({
+                userID: user._id,
+                username: user.username
+            });
+
+            res.cookie('aid', token);
+        }
+
+        return {
+            error: !status,
+            message: status || 'Wrong password'
+        };
+
+    } catch (err) {
+        return {
+            error: true,
+            message: 'There is no such user',
+            status
+        }
     }
 
-    return status;
 }
 
 const authAccess = (req, res, next) => {

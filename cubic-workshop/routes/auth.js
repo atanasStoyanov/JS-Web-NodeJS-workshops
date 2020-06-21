@@ -6,8 +6,11 @@ const User = require('../models/user');
 const router = express.Router();
 
 router.get('/login', guestAccess, getUserStatus, (req, res) => {
+    const error = req.query.error ? 'Username or password is not correct' : null;
+
     res.render('loginPage', {
-        isLoggedIn: req.isLoggedIn
+        isLoggedIn: req.isLoggedIn,
+        error
     });
 });
 
@@ -31,10 +34,10 @@ router.post('/signup', async (req, res) => {
 });
 
 router.post('/login', async (req, res) => {
-    const status = await verifyUser(req, res);
+    const {error} = await verifyUser(req, res);
 
-    if (status) {
-        return res.redirect('/');
+    if (error) {
+        return res.redirect('/login?error=true');
     }
  
     res.redirect('/');
