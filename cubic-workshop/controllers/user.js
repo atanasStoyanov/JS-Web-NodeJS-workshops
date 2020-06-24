@@ -155,6 +155,13 @@ const getUserStatus = (req, res, next) => {
     next();
 
 }
+
+const isCubeCreator = (req, res, next) => {
+    const token = req.cookies['aid'];
+    // to do ... check if logged in user is qual to cube creator
+
+}
+
 module.exports = {
     saveUser,
     authAccess,

@@ -62,18 +62,58 @@ router.get('/details/:id', getUserStatus, async (req, res) => {
     });
 });
 
-router.get('/edit', authAccess, getUserStatus, (req, res) => {
+router.get('/edit/:id', authAccess, getUserStatus, async (req, res) => {
+    const cube = await getCubeWithAccessories(req.params.id);
+
     res.render('editCubePage', {
-        isLoggedIn: req.isLoggedIn
+        isLoggedIn: req.isLoggedIn,
+        ...cube
     });
 });
 
-router.get('/delete', authAccess, getUserStatus, (req, res) => {
+router.post('/edit/:id', authAccess, getUserStatus, async (req, res) => {
+    const { _id } = await getCubeWithAccessories(req.params.id);
+    const {
+        name,
+        description,
+        imageUrl,
+        difficultyLevel
+    } = req.body;
+
+    try {
+        await Cube.updateOne({ _id }, {
+            name: name.trim(),
+            description: description.trim(),
+            imageUrl,
+            difficulty: difficultyLevel,
+        });
+        return res.redirect('/');
+    } catch (err) {
+        return res.redirect(`/details/${cube._id}`)
+    }
+
+});
+
+router.get('/delete/:id', authAccess, getUserStatus, async (req, res) => {
+    const cube = await getCubeWithAccessories(req.params.id);
+
     res.render('deleteCubePage', {
-        isLoggedIn: req.isLoggedIn
+        isLoggedIn: req.isLoggedIn,
+        ...cube
     });
 });
 
+router.post('/delete/:id', authAccess, getUserStatus, async (req, res) => {
+    const { _id } = await getCubeWithAccessories(req.params.id);
+
+    try {
+        await Cube.deleteOne({ _id });
+        return res.redirect('/');
+    } catch (err) {
+        return res.redirect(`/details/${cube._id}`)
+    }
+
+});
 
 
 module.exports = router;
